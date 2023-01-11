@@ -5,7 +5,7 @@ include(CTest)
 enable_testing()
 
 link_directories("C:/SFML/lib/")
-add_executable(nbody main.cpp Space.cpp)
+add_executable(nbody main.cpp Space.cpp NBodySystem.cpp)
 # find_library(SFML 
 # 	NAMES sfml-graphics sfml-window sfml-system
 # 	PATHS "C:/SFML/lib"

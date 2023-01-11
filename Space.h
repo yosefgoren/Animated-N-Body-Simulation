@@ -11,7 +11,7 @@ struct Matrix{
 
     Matrix(const vector<vector<double>>& src);
     Matrix(const Matrix& mat);
-    Matrix(size_t nrows, size_t ncols);
+    Matrix(size_t nrows, size_t ncols, bool initialize = true);
     Matrix& operator=(const vector<vector<double>>& src);
 
     double operator()(int i, int j) const;
@@ -36,7 +36,9 @@ struct Matrix{
     }
 
     Matrix operator+(const Matrix& other) const;
+    
     size_t nrows, ncols;
+private:
     vector<vector<double>> data;
 };
 

@@ -10,8 +10,11 @@ Matrix::Matrix(const vector<vector<double>>& src){
 Matrix::Matrix(const Matrix& mat){
 	*this = mat;
 }
-Matrix::Matrix(size_t nrows, size_t ncols)
-	:nrows(nrows), ncols(ncols), data(nrows, vector<double>(ncols, 0)){}
+Matrix::Matrix(size_t nrows, size_t ncols, bool initialize)
+	:nrows(nrows), ncols(ncols){
+	if(initialize)
+		data = vector(nrows, vector<double>(ncols, 0));
+}
 
 Matrix& Matrix::operator=(const vector<vector<double>>& src){
 	if(!verifyColumnLengths(src)){
