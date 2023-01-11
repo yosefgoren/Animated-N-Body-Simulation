@@ -11,15 +11,20 @@ int main(int, char**) {
     std::cout << "Hello, world!\n";
     sf::RenderWindow window(sf::VideoMode(1024, 1024), "SFML works!");
     
-    vector<Point3D> points3;
-    for(int i = 200; i < 600; i+=100){
-        for(int j = 200; j < 600; j+=100){
-            for(int k = 0; k < 600; k+=100){
-                points3.push_back(Point3D(i, j, k));
+    int n = 4;
+    int num_points = 4*4*4;
+    int stride = 100;
+    Matrix points3(num_points, n);
+    for(int i = 0; i < n; ++i){
+        for(int j = 0; j < n; ++j){
+            for(int k = 0; k < n; ++k){
+                points3(0, i*n*n + j*n + k) = i*stride;
+                points3(1, i*n*n + j*n + k) = j*stride;
+                points3(2, i*n*n + j*n + k) = k*stride;
             }
         }
     }
-    vector<Point2D> points2;
+    Matrix points2(num_points, 2);
 
     Point2D center(256, 0);
     double ax = 0;
@@ -36,14 +41,10 @@ int main(int, char**) {
         auto projector = Projector(ax, 3.14/4);
         ax += 0.01;
 
-        points2.clear();
-        for(auto& p : points3){
-            points2.push_back(center + projector*p);
-        }
+        points2 = projector*points3;
 
         window.clear();
-        for(auto& v : points2)
-            v.draw(window);
+        Point2D::draw(points2, window, 5, sf::Color::Blue);
         window.display();
     }
     std::cout << "done\n";

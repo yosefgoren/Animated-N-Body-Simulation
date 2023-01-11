@@ -10,22 +10,19 @@ Matrix::Matrix(const vector<vector<double>>& src){
 Matrix::Matrix(const Matrix& mat){
 	*this = mat;
 }
-Matrix::Matrix(size_t nrows, size_t ncols, bool initialize)
-	:nrows(nrows), ncols(ncols){
-	if(initialize)
-		data = vector(nrows, vector<double>(ncols, 0));
-}
+Matrix::Matrix(size_t ncols, size_t nrows)
+	:nrows(nrows), ncols(ncols), data(nrows, vector<double>(ncols, 0)){}
 
 Matrix& Matrix::operator=(const vector<vector<double>>& src){
 	if(!verifyColumnLengths(src)){
 		throw VariableLengthsError();
 	}
 	data = src;
-	nrows = data.size();
+	ncols = data.size();
 	if(nrows > 0)
-		ncols = data[0].size();
+		nrows = data[0].size();
 	else
-		ncols = 0;
+		nrows = 0;
 	return *this;
 }
 
@@ -48,11 +45,11 @@ Matrix Matrix::operator*(const Matrix& mat){
 	if(ncols != mat.nrows){
 		throw runtime_error("Matrix dimensions do not match");
 	}
-	Matrix result(nrows, mat.ncols);
+	Matrix result(mat.ncols, nrows);
 	for(int i = 0; i < nrows; i++){
 		for(int j = 0; j < mat.ncols; j++){
 			for(int k = 0; k < ncols; k++){
-				result(i, j) += this->operator()(i, k) * mat(k, j);
+				result(j, i) += this->operator()(k, i) * mat(j, k);//TODO: verify...
 			}
 		}
 	}
@@ -108,6 +105,12 @@ void Point2D::draw(sf::RenderWindow& window, double radius, const sf::Color& col
 	window.draw(shape);
 }
 
+void Point2D::draw(const Matrix& points, sf::RenderWindow& window, double radius, const sf::Color& color){
+	for(int i = 0; i < points.ncols; i++){
+		Point2D(points(0, i), points(1, i)).draw(window, radius, color);
+	}
+}
+
 Point3D::Point3D(double x, double y, double z)
 	:Matrix(vector<vector<double>>({{x}, {y}, {z}})){}
 Point3D::Point3D(const Matrix& mat)
@@ -116,3 +119,4 @@ Point3D::Point3D(const Matrix& mat)
 		throw runtime_error("Expected 3x1 matrix");
 	}
 }
+

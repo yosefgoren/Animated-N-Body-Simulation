@@ -41,7 +41,7 @@ NBodySystem::~NBodySystem() {
 
 Matrix NBodySystem::getPositions() const{
 	//output dims are (N_BODIES, 3).
-	Matrix positions(N_BODIES, 3, false);
+	Matrix positions(N_BODIES, 3);
 	for(int dim = 0; dim < N_DIMS; ++dim){
 		for(int i = 0; i < N_BODIES; ++i){
 			positions(dim, i) = p->positions[dim][i];

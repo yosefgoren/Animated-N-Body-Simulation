@@ -11,7 +11,7 @@ struct Matrix{
 
     Matrix(const vector<vector<double>>& src);
     Matrix(const Matrix& mat);
-    Matrix(size_t nrows, size_t ncols, bool initialize = true);
+    Matrix(size_t ncols, size_t nrows);
     Matrix& operator=(const vector<vector<double>>& src);
 
     double operator()(int i, int j) const;
@@ -51,6 +51,7 @@ struct Point2D : public Matrix{
     Point2D(double x = 0, double y = 0);
     Point2D(const Matrix& mat);
     void draw(sf::RenderWindow& window, double radius = 5, const sf::Color& color = sf::Color::Blue);
+    static void draw(const Matrix& points, sf::RenderWindow& window, double radius = 5, const sf::Color& color = sf::Color::Blue);
 };
 struct Point3D : public Matrix{
     Point3D(double x = 0, double y = 0, double z = 0);
