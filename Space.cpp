@@ -4,32 +4,32 @@
 Matrix::VariableLengthsError::VariableLengthsError()
 	: runtime_error("Expected all input lengths to be the same"){}
 
-Matrix::Matrix(const vector<vector<double>>& src){
+Matrix::Matrix(const vector<vector<float>>& src){
 	*this = src;
 }
 Matrix::Matrix(const Matrix& mat){
 	*this = mat;
 }
-Matrix::Matrix(size_t ncols, size_t nrows)
-	:nrows(nrows), ncols(ncols), data(nrows, vector<double>(ncols, 0)){}
+Matrix::Matrix(size_t nrows, size_t ncols)
+	:nrows(nrows), ncols(ncols), data(nrows, vector<float>(ncols, 0)){}
 
-Matrix& Matrix::operator=(const vector<vector<double>>& src){
+Matrix& Matrix::operator=(const vector<vector<float>>& src){
 	if(!verifyColumnLengths(src)){
 		throw VariableLengthsError();
 	}
 	data = src;
-	ncols = data.size();
+	nrows = data.size();
 	if(nrows > 0)
-		nrows = data[0].size();
+		ncols = data[0].size();
 	else
-		nrows = 0;
+		ncols = 0;
 	return *this;
 }
 
-double Matrix::operator()(int i, int j) const{
+float Matrix::operator()(int i, int j) const{
 	return data[i][j];
 }
-double& Matrix::operator()(int i, int j){
+float& Matrix::operator()(int i, int j){
 	return data[i][j];
 }
 
@@ -45,11 +45,11 @@ Matrix Matrix::operator*(const Matrix& mat){
 	if(ncols != mat.nrows){
 		throw runtime_error("Matrix dimensions do not match");
 	}
-	Matrix result(mat.ncols, nrows);
+	Matrix result = Matrix(nrows, mat.ncols);
 	for(int i = 0; i < nrows; i++){
 		for(int j = 0; j < mat.ncols; j++){
 			for(int k = 0; k < ncols; k++){
-				result(j, i) += this->operator()(k, i) * mat(j, k);//TODO: verify...
+				result(i, j) += this->operator()(i, k) * mat(k, j);//TODO: verify...
 			}
 		}
 	}
@@ -81,23 +81,23 @@ Matrix Matrix::operator+(const Matrix& other) const{
 	return result;
 }
 
-Projector::Projector(double a[3])
+Projector::Projector(float a[3])
     :Projector({a[0], a[1], a[2]}){}
-Projector::Projector(double ax, double ay, double az)
+Projector::Projector(float ax, float ay, float az)
 	:Matrix({
 	{cos(az)*cos(ax)-sin(az)*sin(ax)*sin(ay), cos(az)*sin(ax)*sin(ay)+sin(az)*cos(ax), -sin(az)*cos(ay)},
 	{-cos(az)*sin(ax)-sin(az)*cos(ax)*sin(ay), cos(az)*cos(ax)*sin(ay)-sin(az)*sin(ax), cos(az)*cos(ay)}
 }){}
 
-Point2D::Point2D(double x, double y)
-	:Matrix(vector<vector<double>>({{x}, {y}})){}
+Point2D::Point2D(float x, float y)
+	:Matrix(vector<vector<float>>({{x}, {y}})){}
 Point2D::Point2D(const Matrix& mat)
 	:Matrix(mat){
 	if(mat.ncols != 1 || mat.nrows != 2){
 		throw runtime_error("Expected 2x1 matrix");
 	}
 }
-void Point2D::draw(sf::RenderWindow& window, double radius, const sf::Color& color){
+void Point2D::draw(sf::RenderWindow& window, float radius, const sf::Color& color){
 	sf::CircleShape shape(radius);
 	shape.setFillColor(color);
 	//shape.setOrigin((*this)(0, 0), (*this)(1, 0));
@@ -105,14 +105,14 @@ void Point2D::draw(sf::RenderWindow& window, double radius, const sf::Color& col
 	window.draw(shape);
 }
 
-void Point2D::draw(const Matrix& points, sf::RenderWindow& window, double radius, const sf::Color& color){
+void Point2D::draw(const Matrix& points, sf::RenderWindow& window, float radius, const sf::Color& color){
 	for(int i = 0; i < points.ncols; i++){
 		Point2D(points(0, i), points(1, i)).draw(window, radius, color);
 	}
 }
 
-Point3D::Point3D(double x, double y, double z)
-	:Matrix(vector<vector<double>>({{x}, {y}, {z}})){}
+Point3D::Point3D(float x, float y, float z)
+	:Matrix(vector<vector<float>>({{x}, {y}, {z}})){}
 Point3D::Point3D(const Matrix& mat)
 	:Matrix(mat){
 	if(mat.ncols != 1 || mat.nrows != 3){
