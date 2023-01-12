@@ -7,7 +7,7 @@
 
 // #define NUM_THREADS 24
 
-void randomizeBodies_orig(float *data, int n) {
+static void randomizeBodies_orig(float *data, int n) {
   for (int i = 0; i < n; i++) {
     data[i] = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
   }
@@ -41,7 +41,7 @@ NBodySystem::~NBodySystem() {
 
 Matrix NBodySystem::getPositions() const{
 	//output dims are (N_BODIES, 3).
-	Matrix positions(N_BODIES, 3);
+	Matrix positions(3, N_BODIES);
 	for(int dim = 0; dim < N_DIMS; ++dim){
 		for(int i = 0; i < N_BODIES; ++i){
 			positions(dim, i) = p->positions[dim][i];

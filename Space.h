@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <iostream>
 #include <SFML/Graphics.hpp>
@@ -18,8 +20,8 @@ struct Matrix{
     float& operator()(int i, int j);
 
     Matrix& operator=(const Matrix& mat);
-    //overload opeartor * for matrix multiplication:
-    Matrix operator*(const Matrix& mat);
+    Matrix operator*(const Matrix& mat) const;
+    Matrix operator*(float f) const;
     string to_string() const;
 
     template <typename T>

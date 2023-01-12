@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Space.h"
+#include "NBodySystem.h"
 
 using namespace std;
 
@@ -28,25 +29,28 @@ int amain(){
 
 int main(int, char**) {
     std::cout << "Hello, world!\n";
-    sf::RenderWindow window(sf::VideoMode(1024, 1024), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(512, 512), "physics!");
     
     int n = 4;
     int num_points = 4*4*4;
     int stride = 100;
-    Matrix points3(3, num_points);
-    for(int i = 0; i < n; ++i){
-        for(int j = 0; j < n; ++j){
-            for(int k = 0; k < n; ++k){
-                points3(0, i*n*n + j*n + k) = float(i*stride);
-                points3(1, i*n*n + j*n + k) = float(j*stride);
-                points3(2, i*n*n + j*n + k) = float(k*stride);
-            }
-        }
-    }
+    // Matrix points3(3, num_points);
+    // for(int i = 0; i < n; ++i){
+    //     for(int j = 0; j < n; ++j){
+    //         for(int k = 0; k < n; ++k){
+    //             points3(0, i*n*n + j*n + k) = float(i*stride);
+    //             points3(1, i*n*n + j*n + k) = float(j*stride);
+    //             points3(2, i*n*n + j*n + k) = float(k*stride);
+    //         }
+    //     }
+    // }
+    NBodySystem s;
+
     Matrix points2(num_points, 2);
 
-    Point2D center(256, 0);
+    Point2D center(256, 256);
     float ax = 0;
+    bool first = true;
     while (window.isOpen())
     {
         sf::Event event;
@@ -57,14 +61,19 @@ int main(int, char**) {
         }
 
         sf::sleep(sf::seconds(0.05f));
-        auto projector = Projector(ax, 3.14f/4);
+        auto projector = Projector(ax, 3.14f*3/8);
         ax += 0.01f;
 
-        points2 = projector*points3;
+        s.step(0.003f);
+        points2 = (projector*s.getPositions())*128.f+center;
 
         window.clear();
-        Point2D::draw(points2, window, 5, sf::Color::Blue);
+        Point2D::draw(points2, window, 2, sf::Color::Blue);
         window.display();
+        if(first){
+            first = false;
+            sf::sleep(sf::seconds(3.f));
+        }
     }
     std::cout << "done\n";
 

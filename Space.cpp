@@ -40,8 +40,18 @@ Matrix& Matrix::operator=(const Matrix& mat){
 	return *this;
 }
 
+static Matrix expand(const Matrix& source, int nrows, int ncols){
+	Matrix result = Matrix(nrows, ncols);
+	for(int i = 0; i < nrows; i++){
+		for(int j = 0; j < ncols; j++){
+			result(i, j) = source(i%source.nrows, j%source.ncols);
+		}
+	}
+	return result;
+}
+
 //overload opeartor * for matrix multiplication:
-Matrix Matrix::operator*(const Matrix& mat){
+Matrix Matrix::operator*(const Matrix& mat) const{
 	if(ncols != mat.nrows){
 		throw runtime_error("Matrix dimensions do not match");
 	}
@@ -55,6 +65,46 @@ Matrix Matrix::operator*(const Matrix& mat){
 	}
 	return result;
 }
+Matrix Matrix::operator*(float f) const{
+	Matrix result = Matrix(nrows, ncols);
+	for(int i = 0; i < nrows; i++){
+		for(int j = 0; j < ncols; j++){
+			result(i, j) = f * this->operator()(i, j);
+		}
+	}
+	return result;
+}
+Matrix Matrix::operator+(const Matrix& mat) const{
+	if((ncols%mat.ncols != 0 && mat.ncols%ncols != 0)
+		|| (nrows%mat.nrows != 0 && mat.nrows%nrows != 0)){
+		throw runtime_error("Matrix dimensions do not match");
+	}
+	size_t res_nrows = max(nrows, mat.nrows);
+	size_t res_ncols = max(ncols, mat.ncols);
+	
+	Matrix mat1_d = expand(*this, res_nrows, res_ncols), mat2_d = expand(mat, res_nrows, res_ncols);
+	Matrix result = Matrix(res_nrows, res_ncols);
+	for(int i = 0; i < res_nrows; i++){
+		for(int j = 0; j < res_ncols; j++){
+			result(i, j) = mat1_d(i, j) + mat2_d(i, j);
+		}
+	}
+
+	return result;
+}
+
+// Matrix Matrix::operator+(const Matrix& other) const{
+// 	if(nrows != other.nrows || ncols != other.ncols){
+// 		throw runtime_error("Matrix dimensions do not match");
+// 	}
+// 	Matrix result(nrows, ncols);
+// 	for(int i = 0; i < nrows; i++){
+// 		for(int j = 0; j < ncols; j++){
+// 			result(i, j) = this->operator()(i, j) + other(i, j);
+// 		}
+// 	}
+// 	return result;
+// }
 
 string Matrix::to_string() const{
 	string res;
@@ -66,19 +116,6 @@ string Matrix::to_string() const{
 	}
 	res += "\n";
 	return res;
-}
-
-Matrix Matrix::operator+(const Matrix& other) const{
-	if(nrows != other.nrows || ncols != other.ncols){
-		throw runtime_error("Matrix dimensions do not match");
-	}
-	Matrix result(nrows, ncols);
-	for(int i = 0; i < nrows; i++){
-		for(int j = 0; j < ncols; j++){
-			result(i, j) = this->operator()(i, j) + other(i, j);
-		}
-	}
-	return result;
 }
 
 Projector::Projector(float a[3])
